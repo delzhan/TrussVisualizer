@@ -19,7 +19,7 @@ Widget::~Widget()
     delete ui;
 }
 
-//Метод для рисования
+//Метод для рисования линий
 void Widget::drawArrow(QPainter &painter,
                        QPointF start,
                        QPointF end,
@@ -61,7 +61,7 @@ void Widget::drawArrow(QPainter &painter,
 
     // Рассчитываем позицию текста и рисуем его
     QPointF textPos = end + direction * 15;
-    painter.drawText(textPos, label); // Эта строка была пропущена!
+    painter.drawText(textPos, label); 
 }
 
 void Widget::paintEvent(QPaintEvent *event)
@@ -72,55 +72,47 @@ void Widget::paintEvent(QPaintEvent *event)
     painter.setPen(QPen(Qt::white, 2));
 
 
-    // ФЕРМА
-    // Начальная точка (левая граница фермы)
+    // ДВУМЕРНАЯ ФЕРМА
     int startX = width()/4;
     int startY = height()/3;
-    int size = 150; // Размер элементов
+    int size = 150; // Размер грани для каждого элемента двумерной фермы
 
-    // 1. Первый треугольник
+    // Визуальзиация объектов двумерной фермы
     QPolygonF triangle1;
     triangle1 << QPointF(startX, startY + size)  // Левый нижний угол
               << QPointF(startX + size, startY + size)   // Левый верхний угол
               << QPointF(startX + size, startY);  // Правый верхний угол
     painter.drawPolygon(triangle1);
 
-    QPolygonF triangle3; // нижний треугольник (влево)
+    QPolygonF triangle3; 
     triangle3 << QPointF(startX + size, startY + size * 1.5)  // Правый нижний угол
               << QPointF(startX, startY + size)   // Левый верхний угол
               << QPointF(startX + size, startY + size);  // Правый верхний угол
     painter.drawPolygon(triangle3);
 
-    // 3. Второй нижний треугольник (вправо)
     QPolygonF triangle4;
     triangle4 << QPointF(startX + size, startY + size * 1.5)  // Левый нижний угол
               << QPointF(startX + size * 2, startY + size)        // Правый верхний угол
               << QPointF(startX + size, startY + size);       // Левый верхний угол
     painter.drawPolygon(triangle4);
 
-    // 4. Третий нижний треугольник (влево)
     QPolygonF triangle5;
     triangle5 << QPointF(startX + size * 3, startY + size * 1.5)  // Правый нижний угол
               << QPointF(startX + size * 2, startY + size)   // Левый верхний угол
               << QPointF(startX + size * 3, startY + size);  // Правый верхний угол
     painter.drawPolygon(triangle5);
 
-    // 5. Четвертый нижний треугольник (вправо)
     QPolygonF triangle6;
     triangle6 << QPointF(startX + size * 3, startY + size * 1.5)  // Левый нижний угол
               << QPointF(startX + size * 4, startY + size)        // Правый верхний угол
               << QPointF(startX + size * 3, startY + size);       // Левый верхний угол
     painter.drawPolygon(triangle6);
 
-    // 2. Первый квадрат
     QRectF square1(startX + size, startY, size, size);
     painter.drawRect(square1);
-
-    // 3. Второй квадрат
     QRectF square2(startX + 2*size, startY, size, size);
     painter.drawRect(square2);
 
-    // 4. Зеркальный треугольник
     QPolygonF triangle2;
     triangle2 << QPointF(startX + 3*size, startY)          // Левый верхний угол
               << QPointF(startX + 3*size, startY + size)    // Левый нижний угол
@@ -130,73 +122,62 @@ void Widget::paintEvent(QPaintEvent *event)
 
 
     //ОСИ КООРДИНАТ
-    // Центр координат
-    QPointF center(60, height() - 60);
+    QPointF center(60, height() - 60); // Задаём координаты начала
+    
+    // 1. Ось Y
+    drawArrow(painter,
+              center,
+              center - QPointF(0, 80),
+              10,
+              "Y",
+              QColor(215,215,4));
 
-    // 1. Зелёная точка с ЧЕРНОЙ подписью "Z"
+    // 2. Ось X 
+    drawArrow(painter,
+              center,
+              center + QPointF(80, 0),
+              10,
+              "X",
+              QColor(185,22,41));
+
+    // 3. точка Z
     painter.setPen(QColor(0,93,0));
     painter.setBrush(QColor(0,93,0));
     painter.drawEllipse(center, 5, 5);
     painter.setPen(Qt::white); // Устанавливаем черный цвет для текста
     painter.drawText(center + QPointF(10, -10), "Z");
 
-    // 2. Ось Y (жёлтая)
-    drawArrow(painter,
-              center,
-              center - QPointF(0, 80),
-              10,
-              "Y",
-              QColor(120,121,27));
-
-    // 3. Ось X (красная)
-    drawArrow(painter,
-              center,
-              center + QPointF(80, 0),
-              10,
-              "X",
-              QColor(73, 9, 16));
-
-
 
     //ГРАДИЕНТ
-    // Прямоугольник с градиентом
+    // Создаём объект прямоугольника и задаём ему размер
     QRect gradientRect(width() - 110, height() - 260, 30, 200);
-    // Вертикальный градиент (меняем x2,y2 на вертикальное направление)
+    // Вертикальная цветовая шкала
     QLinearGradient gradient(
-        gradientRect.left(), gradientRect.top(),    // Начальная точка (верх)
-        gradientRect.left(), gradientRect.bottom() // Конечная точка (низ)
+        gradientRect.left(), gradientRect.top(), 
+        gradientRect.left(), gradientRect.bottom() 
         );
-    gradient.setColorAt(0, QColor(24, 36, 77));
+    gradient.setColorAt(0, QColor(185,22,41));
     gradient.setColorAt(0.5, Qt::white);
-    gradient.setColorAt(1, QColor(73, 9, 16));
+    gradient.setColorAt(1, QColor(75,100,213));
 
     painter.setBrush(gradient);
     painter.setPen(QPen(Qt::gray, 1));
     painter.drawRect(gradientRect);
 
     // Настройки текста
-    painter.setPen(Qt::white); // Цвет текста
+    painter.setPen(Qt::white); 
     QFont font = painter.font();
-    font.setPointSize(8); // Размер шрифта
+    font.setPointSize(8); 
     painter.setFont(font);
 
-    // Положение текста (справа от прямоугольника)
-    int textX = gradientRect.right() + 10;  // 10px от правого края прямоугольника
+    int textX = gradientRect.right() + 10;  // подписи смещены на 10px от правого края прямоугольника
 
-    // Основные метки
-    painter.drawText(textX, gradientRect.top() + 5,    "3.3e-03");  // Верх
-    painter.drawText(textX, gradientRect.center().y(), "0");   // Центр
-    painter.drawText(textX, gradientRect.bottom() - 5, "-3.3e-03");    // Низ
-
-    // Промежуточные метки
-    painter.drawText(textX,
-                     (gradientRect.top() + gradientRect.center().y()) / 2,
-                     "0.002");  // Между 100% и 50%
-
-    painter.drawText(textX,
-                     (gradientRect.center().y() + gradientRect.bottom()) / 2,
-                     "-0.002");  // Между 50% и 0%
-
-
+    // Подписи к цветовой шкале
+    painter.drawText(textX, gradientRect.top() + 5,    "3.3e-03");  
+    painter.drawText(textX, gradientRect.center().y(), "0");   
+    painter.drawText(textX, gradientRect.bottom() - 5, "-3.3e-03");    
+    painter.drawText(textX, (gradientRect.top() + gradientRect.center().y()) / 2, "0.002"); 
+    painter.drawText(textX, (gradientRect.center().y() + gradientRect.bottom()) / 2, "-0.002"); 
 }
+
 
