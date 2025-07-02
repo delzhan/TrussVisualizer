@@ -8,7 +8,7 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QPalette pal = palette(); //выбрать цвет для фона нашего приложения
+    QPalette pal = palette(); //Фоновый цвет приложения
     pal.setColor(QPalette::Window, QColor( 81, 86, 109));
     setPalette(pal);
     setAutoFillBackground(true);
@@ -30,9 +30,7 @@ void Widget::drawArrow(QPainter &painter,
     // Устанавливаем цвет для данной оси
     painter.setPen(QPen(color, 2)); // Толщина линии 2px
     painter.setBrush(color); // Цвет заливки стрелки
-
-    // Рисуем линию оси
-    painter.drawLine(start, end);
+    painter.drawLine(start, end); // Рисуем линию оси
 
     // Рассчитываем треугольник стрелки
     QPointF diff = end - start;
@@ -49,9 +47,7 @@ void Widget::drawArrow(QPainter &painter,
 
     // Рисуем стрелку
     painter.drawPolygon(QPolygonF() << end << arrowP1 << arrowP2);
-
-    // Подпись оси
-    painter.setPen(Qt::white);
+    painter.setPen(Qt::white); // Подпись оси
 
     QPointF direction = end - start;
     float length = sqrt(direction.x() * direction.x() + direction.y() * direction.y());
